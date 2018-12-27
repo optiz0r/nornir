@@ -4,6 +4,7 @@ import os
 from nornir.core.configuration import Config
 from nornir.plugins.inventory.simple import SimpleInventory
 from nornir.plugins.inventory.ansible import AnsibleInventory
+from nornir.plugins.inventory.nsot import NSOTInventory
 from nornir.core.deserializer.configuration import Config as ConfigDeserializer
 
 from tests.core.deserializer import my_jinja_filters
@@ -171,3 +172,11 @@ class Test(object):
             os.path.join(dir_path, "config.yaml")
         )
         assert config.user_defined["asd"] == "qwe"
+
+    def test_configuration_file_override_env_inventory_plugin(self):
+        os.environ["NORNIR_INVENTORY_PLUGIN"] = "nornir.plugins.inventory.nsot.NSOTInventory"
+        config = ConfigDeserializer.load_from_file(
+            os.path.join(dir_path, "config.yaml")
+        )
+        assert config.inventory.plugin == NSOTInventory
+        os.environ.pop("NORNIR_INVENTORY_PLUGIN")
